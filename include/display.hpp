@@ -15,14 +15,12 @@
 
 class Display {
 public:
-  Display(int width, int height) : height(height), width(width) {
+  Display(int width, int height, IShaderFactory *shaderFactory) : height(height), width(width) {
     init();
     create_window();
     glew_init();
     glEnable(GL_DEPTH_TEST);
-
-    Shader ourShader("shaders/shader.vs", "shaders/shader.fs");
-    shader = ourShader;
+    shader = shaderFactory->get_shader("shaders/shader.vs", "shaders/shader.fs");
   }
 
   void create_frame_buffers();
@@ -48,7 +46,7 @@ private:
 
   unsigned int texture1;
 
-  Shader shader;
+  IShader *shader = nullptr;
 
   void init() {
     glfwInit();

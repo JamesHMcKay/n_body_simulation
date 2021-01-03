@@ -4,28 +4,22 @@
 #include <unistd.h>
 #include <assert.h>
 #include <vector>
-#include "../include/kernel.cuh"
 #include <thread>
+
+#include "../include/kernel.cuh"
 
 #include "../include/display.hpp"
 
 using namespace std::chrono;
-
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-#define SOFTENING 0.1f
-#define BLOCK_SIZE 256
-#define G 1.0f
 
 void handle_cuda_error(cudaError_t err) {
   if (err != cudaSuccess) {
     fprintf(stderr, "CUDA error: %s\n", cudaGetErrorString(err));
     exit(EXIT_FAILURE);
   }
-}
+};
 
-__device__
+__device__ __host__
 float3 add_acceleration(float4 p1, float4 p2, float3 a) {
   float3 delta;
   delta.x = (p1.x - p2.x);
@@ -39,7 +33,7 @@ float3 add_acceleration(float4 p1, float4 p2, float3 a) {
   a.y = - G * delta.y * inv_r2 + a.y;
   a.z = - G * delta.z * inv_r2 + a.z;
   return a;
-}
+};
 
 __global__
 void compute_acceleration(int N, float4 *particles, float3* acceleration) {
@@ -55,7 +49,7 @@ void compute_acceleration(int N, float4 *particles, float3* acceleration) {
     }
     acceleration[i] = acc_temp;
   }
-}
+};
 
 __global__
 void update_position(int N, float4 *particles, float3 *acceleration, float3 *velocity) {
@@ -96,7 +90,9 @@ void call_kernel_managed(float4 *particles, float3* acceleration, float3* veloci
 }
 
 void kernel() {
-  Display display(SCR_WIDTH, SCR_HEIGHT);
+  IShaderFactory* shaderFactory = new ShaderFactory();
+
+  Display display(SCR_WIDTH, SCR_HEIGHT, shaderFactory);
   display.create_frame_buffers();
   display.load_textures();
 
@@ -170,6 +166,7 @@ void kernel() {
   cudaFree(particles);
 
   display.shutdown();
+  delete shaderFactory;
 
 
 

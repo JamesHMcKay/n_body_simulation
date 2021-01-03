@@ -5,7 +5,6 @@
 #include "GL/gl.h"
 #include "glm/glm.hpp"
 
-
 #include "include/kernel.cuh"
 
 int main(int argc, char **argv) {

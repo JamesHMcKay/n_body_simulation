@@ -14,18 +14,18 @@ void Display::main_loop(glm::vec3 *cubePositions, int num_particles) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture1);
 
-  shader.use();
+  shader->use();
 
   // transformation
   glm::mat4 view = glm::mat4(1.0f);
   // note that we're translating the scene in the reverse direction of where we want to move
   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); 
-  int viewLoc = glGetUniformLocation(shader.ID, "view");
+  int viewLoc = glGetUniformLocation(shader->get_id(), "view");
   glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
   glm::mat4 projection;
   projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
-  int projectionLoc = glGetUniformLocation(shader.ID, "projection");
+  int projectionLoc = glGetUniformLocation(shader->get_id(), "projection");
   glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
   glBindVertexArray(VAO);
@@ -38,7 +38,7 @@ void Display::main_loop(glm::vec3 *cubePositions, int num_particles) {
       float angle = 2.0f * (i + 1);
       float time = (float)glfwGetTime();
       model = glm::rotate(model, glm::radians(angle * time), glm::vec3(1.0f, 0.3f, 0.5f));
-      int modelLoc = glGetUniformLocation(shader.ID, "model");
+      int modelLoc = glGetUniformLocation(shader->get_id(), "model");
       glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
       glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -130,8 +130,8 @@ void Display::load_textures() {
   }
   stbi_image_free(data);
 
-  shader.use();
-  shader.setInt("texture1", 0);
+  shader->use();
+  shader->setInt("texture1", 0);
 }
 
 void Display::shutdown() {

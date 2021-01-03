@@ -50,11 +50,33 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
   include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-add_executable(test_simulation
-  tests/test_utils.cpp
+add_executable(run_tests
+  tests/test_compute.cu
+  tests/test_display.cpp
+  tests/mocks/
+  src/shader.cpp
+  src/display.cpp
+  src/kernel.cu
+  include/kernel.cuh
+  include/display.hpp
+  include/shader.hpp
+  include/stb_image.h
 )
 
-target_link_libraries(test_simulation PRIVATE gtest_main)
+target_include_directories (
+    run_tests
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/mocks/
+)
+
+target_compile_features(run_tests PUBLIC cxx_std_14)
+
+target_link_libraries(run_tests glfw)
+target_link_libraries(run_tests OpenGL::GL)
+target_link_libraries(run_tests GLEW)
+target_link_libraries(run_tests gtest_main gmock_main)
+
+set_target_properties(run_tests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 enable_testing()
-add_test(NAME test_simulation COMMAND test_simulation)
+add_test(NAME run_tests COMMAND run_tests)
