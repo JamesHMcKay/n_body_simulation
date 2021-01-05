@@ -5,16 +5,25 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
-add_executable(
-  simulation
+set(
+  SOURCE_FILES
   src/shader.cpp
   src/display.cpp
   src/kernel.cu
+  src/simulation.cu
   include/kernel.cuh
   include/display.hpp
   include/shader.hpp
   include/stb_image.h
+  include/physics.hpp
+  include/consts.hpp
+  include/simulation.cuh
+)
+
+add_executable(
+  simulation
   main.cu
+  ${SOURCE_FILES}
 )
 
 target_link_libraries(simulation glfw)
@@ -54,13 +63,7 @@ add_executable(run_tests
   tests/test_compute.cu
   tests/test_display.cpp
   tests/mocks/
-  src/shader.cpp
-  src/display.cpp
-  src/kernel.cu
-  include/kernel.cuh
-  include/display.hpp
-  include/shader.hpp
-  include/stb_image.h
+  ${SOURCE_FILES}
 )
 
 target_include_directories (
