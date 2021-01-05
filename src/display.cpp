@@ -6,7 +6,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
-void Display::main_loop(glm::vec3 *cubePositions, int num_particles) {
+void Display::main_loop(std::vector<glm::vec3> cubePositions, int num_particles) {
   processInput(window);
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 

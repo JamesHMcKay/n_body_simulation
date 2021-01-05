@@ -1,6 +1,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 #include <iostream>
+#include <vector>
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 #include "GL/freeglut.h"
@@ -27,7 +28,7 @@ public:
 
   void load_textures();
 
-  void main_loop(glm::vec3 *cubePositions, int num_particles);
+  void main_loop(std::vector<glm::vec3> cubePositions, int num_particles);
 
   void shutdown();
 

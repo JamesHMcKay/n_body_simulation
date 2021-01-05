@@ -1,10 +1,4 @@
-#include <iostream>
-#include <math.h>
-#include <chrono>
-#include <unistd.h>
-#include <assert.h>
-#include <vector>
-#include <thread>
+
 
 #include "../include/simulation.cuh"
 #include "../include/kernel.cuh"
@@ -29,20 +23,9 @@ void Simulation::call_kernel_managed(float4 *particles, float3* acceleration, fl
   cudaDeviceSynchronize();
 }
 
-void Simulation::kernel() {
-  IShaderFactory* shaderFactory = new ShaderFactory();
-
-  Display display(SCR_WIDTH, SCR_HEIGHT, shaderFactory);
-  display.create_frame_buffers();
-  display.load_textures();
-
-
-  int N = 3;
+void Simulation::create_particles() {
   printf("%d particles\n", N);
 
-
-  float3 *velocities;
-  float3 *acceleration;
   handle_cuda_error(cudaMallocManaged(&velocities, N * sizeof(float4)));
   handle_cuda_error(cudaMallocManaged(&acceleration, N * sizeof(float4)));
 
@@ -52,43 +35,58 @@ void Simulation::kernel() {
   }
   std::cout << "initial values set" << std::endl;
 
+  float masses[] = {10, 10, 4};
+
   glm::vec3 cubePositions[] = {
     glm::vec3( 0.0f,  0.0f,  0.0f),
     glm::vec3( 3.0f,  4.0f, -15.0f),
     glm::vec3( 2.0f,  -5.0f, -15.0f)
   };
-  float masses[] = {10, 10, 4};
 
-  float4 *particles;
   handle_cuda_error(cudaMallocManaged(&particles, N * sizeof(float4)));
   for (int i = 0; i < N; i++) {
     particles[i] = make_float4(cubePositions[i].x, cubePositions[i].y, cubePositions[i].z, masses[i]);
   }
-  std::cout << "particle 1 before: " << particles[0].x << " " << particles[0].y << " " << particles[0].z << std::endl;
-  std::cout << "acceleration 1 before: " << acceleration[0].x << " " << acceleration[1].y << " " << acceleration[0].z << std::endl;
-  std::cout << "velocities 1 before: " << velocities[0].x << " " << velocities[0].y << " " << velocities[0].z << std::endl;
-  while(!display.window_should_close()) {
+}
 
+void Simulation::print_details(int id) {
+  printf("Particle %d location = (%f, %f, %f)\n", id, particles[0].x, particles[0].y, particles[0].z);
+  printf("Particle %d acceleration = (%f, %f, %f)\n", id, acceleration[0].x, acceleration[0].y, acceleration[0].z);
+  printf("Particle %d velocity = (%f, %f, %f)\n", id, velocities[0].x, velocities[0].y, velocities[0].z);
+}
+
+void Simulation::kernel() {
+  IShaderFactory* shaderFactory = new ShaderFactory();
+
+  Display display(SCR_WIDTH, SCR_HEIGHT, shaderFactory);
+  display.create_frame_buffers();
+  display.load_textures();
+
+  create_particles();
+  print_details(1);
+  while(!display.window_should_close()) {
     call_kernel_managed(particles, acceleration, velocities, N);
     std::cout << " ------ " << std::endl;
     cudaDeviceSynchronize();
-    std::cout << "particle 1 after: " << particles[0].x << " " << particles[0].y << " " << particles[0].z << std::endl;
-    std::cout << "acceleration 1 after: " << acceleration[0].x << " " << acceleration[0].y << " " << acceleration[0].z << std::endl;
-    std::cout << "velocities 1 after: " << velocities[0].x << " " << velocities[0].y << " " << velocities[0].z << std::endl;
-    
+    print_details(1);
     using namespace std::chrono_literals;
     auto start = std::chrono::high_resolution_clock::now();
     std::this_thread::sleep_for(100ms);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end-start;
     std::cout << "Waited " << elapsed.count() << " ms\n";
-    for (int i = 0; i < N; i++) {
-      cubePositions[i] = glm::vec3(particles[i].x, particles[i].y, particles[i].z);
-    }
-    display.main_loop(cubePositions, N) ;
+    display.main_loop(get_glm_vec3_particles(), N) ;
   }
   cudaFree(particles);
 
   display.shutdown();
   delete shaderFactory;
+}
+
+std::vector<glm::vec3> Simulation::get_glm_vec3_particles() {
+  std::vector<glm::vec3> result;
+  for (int i = 0; i < N; i++) {
+    result.push_back(glm::vec3(particles[i].x, particles[i].y, particles[i].z));
+  }
+  return result;
 }
