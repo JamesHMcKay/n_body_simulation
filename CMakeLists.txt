@@ -11,6 +11,7 @@ set(
   src/display.cpp
   src/kernel.cu
   src/simulation.cu
+  src/shape.cpp
   include/kernel.cuh
   include/display.hpp
   include/shader.hpp
@@ -18,6 +19,7 @@ set(
   include/physics.hpp
   include/consts.hpp
   include/simulation.cuh
+  include/shape.hpp
 )
 
 add_executable(

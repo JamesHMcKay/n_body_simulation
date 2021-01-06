@@ -11,11 +11,14 @@
 #include "mockShader.hpp"
 #include "../include/display.hpp"
 #include "../include/shader.hpp"
+#include "../include/shape.hpp"
 
 TEST(test_display, constructor) {
   IShaderFactory* shaderFactory = new MockShaderFactory();
+  IShape* box = new Box();
 
-  Display display(100, 200, shaderFactory);
-
+  Display display(shaderFactory, box);
+  delete box;
+  delete shaderFactory;
   EXPECT_EQ(1, 1);
 }

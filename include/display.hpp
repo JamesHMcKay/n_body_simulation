@@ -13,18 +13,22 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shader.hpp"
+#include "consts.hpp"
+#include "shape.hpp"
 
 class Display {
 public:
-  Display(int width, int height, IShaderFactory *shaderFactory) : height(height), width(width) {
+  Display(IShaderFactory *shaderFactory, IShape *shape) : shape(shape) {
+    width = SCR_WIDTH;
+    height = SCR_HEIGHT;
     init();
     create_window();
     glew_init();
     glEnable(GL_DEPTH_TEST);
     shader = shaderFactory->get_shader("shaders/shader.vs", "shaders/shader.fs");
+    shape->create_frame_buffers();
+    load_textures();
   }
-
-  void create_frame_buffers();
 
   void load_textures();
 
@@ -48,6 +52,8 @@ private:
   unsigned int texture1;
 
   IShader *shader = nullptr;
+
+  IShape *shape = nullptr;
 
   void init() {
     glfwInit();
