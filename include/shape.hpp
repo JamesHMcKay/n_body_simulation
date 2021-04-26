@@ -6,9 +6,6 @@
 #include "GLFW/glfw3.h"
 #include "GL/freeglut.h"
 #include "GL/gl.h"
-
-// glm is a header-only library
-#include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -24,17 +21,6 @@ public:
   virtual void bind_vertex_arrays() const = 0;
 
   virtual ~IShape() {}
-};
-
-class IShapeFactory {
-  public:
-  virtual ~IShapeFactory(){};
-  virtual IShape* factory_method() const = 0;
-
-  IShape* get_shape() const {
-    IShape* shape = this->factory_method();
-    return shape;
-  }
 };
 
 class Box : public IShape {
@@ -57,6 +43,18 @@ private:
   unsigned int VAO;
   unsigned int VBO;
 
+};
+
+// factory method not currently used
+class IShapeFactory {
+  public:
+  virtual ~IShapeFactory(){};
+  virtual IShape* factory_method() const = 0;
+
+  IShape* get_shape() const {
+    IShape* shape = this->factory_method();
+    return shape;
+  }
 };
 
 class BoxFactory : public IShapeFactory {
