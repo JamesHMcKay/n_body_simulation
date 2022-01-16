@@ -3,7 +3,7 @@
 
 #define SOFTENING 0.1f
 #define BLOCK_SIZE 256
-#define G 1.0f
+#define G 0.000001f
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;

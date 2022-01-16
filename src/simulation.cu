@@ -28,23 +28,33 @@ void Simulation::create_particles() {
   handle_cuda_error(cudaMallocManaged(&velocities, N * sizeof(float4)));
   handle_cuda_error(cudaMallocManaged(&acceleration, N * sizeof(float4)));
 
-  for (int i = 0; i < N; i++) {
-    velocities[i] = make_float3(0.1, 0, 0);
-    acceleration[i] = make_float3(0, 0, 0);
-  }
-  std::cout << "initial values set" << std::endl;
+  // for (int i = 0; i < N; i++) {
+  //   velocities[i] = make_float3(0, 0, 0);
+  //   acceleration[i] = make_float3(0, 0, 0);
+  // }
 
-  float masses[] = {10, 10, 4};
+  float masses_init[] = {100000, 1};
 
-  glm::vec3 cubePositions[] = {
-    glm::vec3( 0.1f, 0.1f, 0.1f),
-    glm::vec3( 3.0f, 4.0f, -15.0f),
-    glm::vec3( 2.0f, -5.0f, -15.0f)
+  glm::vec3 velocities_init[] = {
+    glm::vec3(0.0f, 0.0f, 0.0f),
+    glm::vec3(0.0f, 0.2f, 0.0f)
+  };
+
+  glm::vec3 acceleration_init[] = {
+    glm::vec3(0.0f, 0.0f, 0.0f),
+    glm::vec3(0.0f, 0.0f, 0.0f)
+  };
+
+  glm::vec3 positions_init[] = {
+    glm::vec3(0.0f, 0.0f, 0.0f),
+    glm::vec3(1.5f, 0.0f, 0.0f)
   };
 
   handle_cuda_error(cudaMallocManaged(&particles, N * sizeof(float4)));
   for (int i = 0; i < N; i++) {
-    particles[i] = make_float4(cubePositions[i].x, cubePositions[i].y, cubePositions[i].z, masses[i]);
+    particles[i] = make_float4(positions_init[i].x, positions_init[i].y, positions_init[i].z, masses_init[i]);
+    velocities[i] = make_float3(velocities_init[i].x, velocities_init[i].y, velocities_init[i].z);
+    acceleration[i] = make_float3(acceleration_init[i].x, acceleration_init[i].y, acceleration_init[i].z);
   }
 }
 
@@ -61,18 +71,15 @@ void Simulation::kernel() {
   Display display(shaderFactory, box);
 
   create_particles();
-  while(!display.window_should_close() && time < 200) {
+  while(!display.window_should_close() && time < 10000) {
+    print_details(0);
     print_details(1);
+    std::cout << " ------ " << std::endl;
     save_positions();
     call_kernel_managed();
-    std::cout << " ------ " << std::endl;
+
     cudaDeviceSynchronize();
-    using namespace std::chrono_literals;
-    auto start = std::chrono::high_resolution_clock::now();
-    std::this_thread::sleep_for(100ms);
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> elapsed = end - start;
-    std::cout << "Waited " << elapsed.count() << " ms\n";
+
     display.main_loop(get_glm_vec3_particles(), N) ;
   }
   cudaFree(particles);
@@ -93,12 +100,10 @@ std::vector<glm::vec3> Simulation::get_glm_vec3_particles() {
 
 void Simulation::save_positions() {
   // output table has columns time, particle, x, y, z
-  int id = 1;
   std::vector<float4> particles_copy;
   for (int i = 0; i < N; i++) {
     particles_copy.push_back(particles[i]);
   }
-  printf("particles_copy %d location = (%f, %f, %f)\n", id, particles_copy[id].x, particles_copy[id].y, particles_copy[id].z);
   history.push_back(particles_copy);
 }
 

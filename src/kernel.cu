@@ -31,7 +31,7 @@ void compute_acceleration(int N, float4 *particles, float3* acceleration, Physic
 __global__
 void update_position(int N, float4 *particles, float3 *acceleration, float3 *velocity) {
   int id = blockIdx.x * blockDim.x + threadIdx.x;
-  float delta_t = 1;
+  float delta_t = 0.1;
 
   for (int i = id; i < N; i += blockDim.x * gridDim.x) {
     float3 s;

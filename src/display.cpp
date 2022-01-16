@@ -10,7 +10,7 @@ void processInput(GLFWwindow *window);
 void Display::main_loop(std::vector<glm::vec3> cubePositions, int num_particles) {
   processInput(window);
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture1);
@@ -20,7 +20,7 @@ void Display::main_loop(std::vector<glm::vec3> cubePositions, int num_particles)
   // transformation
   glm::mat4 view = glm::mat4(1.0f);
   // note that we're translating the scene in the reverse direction of where we want to move
-  view = glm::translate(view, glm::vec3(0.0f, 0.0f, -20.0f)); 
+  view = glm::translate(view, glm::vec3(0.0f, 0.0f, -20.0f));
   int viewLoc = glGetUniformLocation(shader->get_id(), "view");
   glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
@@ -33,7 +33,7 @@ void Display::main_loop(std::vector<glm::vec3> cubePositions, int num_particles)
 
   for (unsigned int i = 0; i < num_particles; i++) {
       glm::mat4 model = glm::mat4(1.0f);
-      model = glm::scale(model, glm::vec3(0.2, -0.2, 0.2));
+      // model = glm::scale(model, glm::vec3(0.2, -0.2, 0.2));
       model = glm::translate(model, cubePositions[i]);
 
 //      float angle = 2.0f * (i + 1);

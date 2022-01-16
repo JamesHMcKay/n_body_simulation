@@ -40,7 +40,7 @@ public:
   void write_output();
 
 private:
-  int N = 3;
+  int N = 2;
   float3 *velocities;
   float3 *acceleration;
   float4 *particles;

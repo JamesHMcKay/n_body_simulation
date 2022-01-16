@@ -10,6 +10,6 @@ fig = plt.figure()
 for particleId in range(0, 2):
   particleId = 1
   historyFiltered = df[df['id'] == particleId]
-  plt.plot(historyFiltered['x'], historyFiltered['z'], 'x')
+  plt.plot(historyFiltered['x'], historyFiltered['y'], '-')
 
 plt.savefig("plot.pdf")

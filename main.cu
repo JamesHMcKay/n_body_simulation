@@ -8,7 +8,6 @@
 #include "include/simulation.cuh"
 #include "include/kernel.cuh"
 
-
 int main(int argc, char **argv) {
   Simulation particle_simulation;
   particle_simulation.kernel();
